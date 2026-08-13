@@ -1,6 +1,6 @@
 // =========================
 // REGISTER
-// =========================
+// =/========================
 
 const registerForm = document.getElementById("registerForm");
 
@@ -48,8 +48,7 @@ if (registerForm) {
 
             if (data.success) {
 
-                window.location.href =
-                    "login.html";
+                window.location.href = "login.html";
 
             }
 
@@ -68,7 +67,6 @@ if (registerForm) {
 }
 
 
-
 // =========================
 // LOGIN
 // =========================
@@ -81,7 +79,6 @@ if (loginForm) {
     loginForm.addEventListener("submit", function (event) {
 
         event.preventDefault();
-
 
         const email =
             document.getElementById("email").value;
@@ -111,12 +108,18 @@ if (loginForm) {
 
             alert(data.message);
 
-
             if (data.success) {
 
+                // Save logged-in user's role
                 localStorage.setItem(
                     "userRole",
                     data.user.role
+                );
+
+                // Save logged-in user's ID
+                localStorage.setItem(
+                    "userId",
+                    data.user.id
                 );
 
 
@@ -125,9 +128,7 @@ if (loginForm) {
                     window.location.href =
                         "admin.html";
 
-                }
-
-                else {
+                } else {
 
                     window.location.href =
                         "user.html";
@@ -151,22 +152,21 @@ if (loginForm) {
 }
 
 
-
 // =========================
-// USER ROLE
+// USER ROLE & USER ID
 // =========================
 
 const userRole =
     localStorage.getItem("userRole");
 
+const userId =
+    localStorage.getItem("userId");
 
 
 // =========================
 // PAGE MODE
 // =========================
 
-// Example:
-//
 // books.html
 // books.html?mode=borrow
 // books.html?mode=return
@@ -176,7 +176,6 @@ const urlParams =
 
 const pageMode =
     urlParams.get("mode");
-
 
 
 // =========================
@@ -192,6 +191,8 @@ const availableBooksSection =
 
 if (pageMode === "return") {
 
+    // Return mode-এ Available Books hide হবে
+
     if (availableBooksSection) {
 
         availableBooksSection.style.display =
@@ -199,9 +200,7 @@ if (pageMode === "return") {
 
     }
 
-}
-
-else {
+} else {
 
     if (bookTable) {
 
@@ -216,7 +215,9 @@ else {
                     let action = "";
 
 
+                    // =========================
                     // ADMIN
+                    // =========================
 
                     if (userRole === "admin") {
 
@@ -242,7 +243,9 @@ else {
                     }
 
 
-                    // USER - BORROW MODE
+                    // =========================
+                    // USER
+                    // =========================
 
                     else {
 
@@ -259,9 +262,7 @@ else {
 
                             `;
 
-                        }
-
-                        else {
+                        } else {
 
                             action =
                                 "Not Available";
@@ -311,9 +312,7 @@ else {
 
                 console.log(error);
 
-                alert(
-                    "Failed to Load Books"
-                );
+                alert("Failed to Load Books");
 
             });
 
@@ -322,28 +321,35 @@ else {
 }
 
 
-
 // =========================
 // BORROW BOOK
 // =========================
 
 function borrowBook(bookId) {
 
+    if (!userId) {
+
+        alert("User not logged in!");
+
+        return;
+
+    }
+
+
     fetch("http://localhost:3000/borrow-book", {
 
         method: "POST",
 
         headers: {
-
-            "Content-Type":
-                "application/json"
-
+            "Content-Type": "application/json"
         },
 
         body: JSON.stringify({
 
-            user_id: 2,
+            // Logged-in user's ID
+            user_id: Number(userId),
 
+            // Selected book ID
             book_id: bookId
 
         })
@@ -355,7 +361,6 @@ function borrowBook(bookId) {
     .then(data => {
 
         alert(data.message);
-
 
         if (data.success) {
 
@@ -377,7 +382,6 @@ function borrowBook(bookId) {
 }
 
 
-
 // =========================
 // BORROWED BOOKS
 // =========================
@@ -393,7 +397,9 @@ const borrowedBooksSection =
     );
 
 
-// ADMIN হলে borrowed section hide
+// =========================
+// ADMIN - HIDE BORROWED BOOKS
+// =========================
 
 if (
     borrowedBooksSection &&
@@ -406,7 +412,9 @@ if (
 }
 
 
-// BORROW MODE হলে borrowed section hide
+// =========================
+// BORROW MODE - HIDE BORROWED BOOKS
+// =========================
 
 if (
     borrowedBooksSection &&
@@ -418,113 +426,163 @@ if (
 
 }
 
+// =========================
+// VIEW MODE - HIDE BORROWED BOOKS
+// =========================
 
-// RETURN MODE অথবা VIEW MODE
+if (
+    borrowedBooksSection &&
+    (pageMode === "view" || pageMode === null)
+) {
+
+    borrowedBooksSection.style.display = "none";
+
+}
+// =========================
+// RETURN MODE / VIEW MODE
+// =========================
 
 if (
     borrowedBookTable &&
-    userRole !== "admin"
+    userRole !== "admin" &&
+    pageMode === "return"
 ) {
 
-    fetch(
-        "http://localhost:3000/borrowed-books/2"
-    )
+    if (!userId) {
 
-    .then(response => response.json())
+        alert("User not logged in!");
 
-    .then(data => {
+    } else {
 
-        if (!data.success) {
+        fetch(
+            `http://localhost:3000/borrowed-books/${userId}`
+        )
 
-            alert(data.message);
+        .then(response => response.json())
 
-            return;
+        .then(data => {
 
-        }
+            if (!data.success) {
 
+                alert(data.message);
 
-        data.books.forEach(function (book) {
-
-            let action = "";
-
-
-            if (
-                book.status === "Borrowed"
-            ) {
-
-                action = `
-
-                    <button
-                        onclick="returnBook(${book.borrow_id})">
-
-                        Return
-
-                    </button>
-
-                `;
-
-            }
-
-            else {
-
-                action =
-                    "Returned";
+                return;
 
             }
 
 
-            borrowedBookTable.innerHTML += `
+            data.books.forEach(function (book) {
 
-                <tr>
+                let action = "";
 
-                    <td>
-                        ${book.borrow_id}
-                    </td>
 
-                    <td>
-                        ${book.title}
-                    </td>
+                // =========================
+                // BORROWED
+                // =========================
 
-                    <td>
-                        ${book.author}
-                    </td>
+                if (
+                    book.status === "Borrowed"
+                ) {
 
-                    <td>
+                    action = `
 
-                        ${new Date(
-                            book.borrow_date
-                        ).toLocaleDateString()}
+                        <button
+                            onclick="returnBook(${book.borrow_id})">
 
-                    </td>
+                            Return
 
-                    <td>
-                        ${book.status}
-                    </td>
+                        </button>
 
-                    <td>
-                        ${action}
-                    </td>
+                    `;
 
-                </tr>
+                }
 
-            `;
+
+                // =========================
+                // RETURNED
+                // =========================
+
+                else {
+
+                    action =
+                        "Returned";
+
+                }
+
+
+                // =========================
+                // RETURN DATE
+                // =========================
+
+                let returnDate = "-";
+
+                if (book.return_date) {
+
+                    returnDate =
+                        new Date(
+                            book.return_date
+                        ).toLocaleDateString();
+
+                }
+
+
+               borrowedBookTable.innerHTML += `
+
+    <tr>
+
+        <td>
+            ${book.borrow_id}
+        </td>
+
+        <td>
+            ${book.title}
+        </td>
+
+        <td>
+            ${book.author}
+        </td>
+
+        <td>
+            ${new Date(book.borrow_date).toLocaleDateString()}
+        </td>
+
+        <td>
+            ${
+                book.return_date
+                    ? new Date(book.return_date).toLocaleDateString()
+                    : "-"
+            }
+        </td>
+
+        <td>
+            ${book.status}
+        </td>
+
+        <td>
+            ${action}
+        </td>
+
+    </tr>
+
+`;
+
+            });
+
+        })
+
+        .catch(function (error) {
+
+            console.log(error);
+
+            alert(
+                "Failed to Load Borrowed Books"
+            );
 
         });
 
-    })
-
-    .catch(function (error) {
-
-        console.log(error);
-
-        alert(
-            "Failed to Load Borrowed Books"
-        );
-
-    });
+    }
 
 }
-
 
 
 // =========================
@@ -549,7 +607,6 @@ function returnBook(borrowId) {
 
         alert(data.message);
 
-
         if (data.success) {
 
             window.location.href =
@@ -568,7 +625,6 @@ function returnBook(borrowId) {
     });
 
 }
-
 
 
 // =========================
@@ -637,7 +693,6 @@ function editBook(bookId) {
 
         alert(data.message);
 
-
         if (data.success) {
 
             location.reload();
@@ -655,7 +710,6 @@ function editBook(bookId) {
     });
 
 }
-
 
 
 // =========================
@@ -693,7 +747,6 @@ function deleteBook(bookId) {
 
         alert(data.message);
 
-
         if (data.success) {
 
             location.reload();
@@ -707,6 +760,65 @@ function deleteBook(bookId) {
         console.log(error);
 
         alert("Delete Failed!");
+
+    });
+
+}
+// =========================
+// ADD BOOK
+// =========================
+
+const addBookForm = document.getElementById("addBookForm");
+
+if (addBookForm) {
+
+    addBookForm.addEventListener("submit", function (event) {
+
+        event.preventDefault();
+
+        const title = document.getElementById("title").value;
+        const author = document.getElementById("author").value;
+        const category = document.getElementById("category").value;
+        const quantity = document.getElementById("quantity").value;
+
+        fetch("http://localhost:3000/add-book", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                title,
+                author,
+                category,
+                quantity
+            })
+
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            alert(data.message);
+
+            if (data.success) {
+
+                window.location.href = "books.html";
+
+            }
+
+        })
+
+        .catch(function (error) {
+
+            console.log(error);
+
+            alert("Failed to Add Book!");
+
+        });
 
     });
 
