@@ -46,3 +46,62 @@ if (registerForm) {
     });
 
 }
+
+
+const loginForm = document.getElementById("loginForm");
+
+if (loginForm) {
+
+    loginForm.addEventListener("submit", function (event) {
+
+        event.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        fetch("http://localhost:3000/login", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                email,
+                password
+            })
+
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            alert(data.message);
+
+            if (data.success) {
+
+                if (data.user.role === "admin") {
+
+                    window.location.href = "admin.html";
+
+                } else {
+
+                    window.location.href = "user.html";
+
+                }
+
+            }
+
+        })
+
+        .catch(function () {
+
+            alert("Something went wrong!");
+
+        });
+
+    });
+
+}
