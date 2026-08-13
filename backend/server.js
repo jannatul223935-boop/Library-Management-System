@@ -142,7 +142,32 @@ app.put("/edit-book/:id", function (req, res) {
     });
 
 });
-        // Server Start
+      // Delete Book
+app.delete("/delete-book/:id", function (req, res) {
+
+    const id = req.params.id;
+
+    const sql = "DELETE FROM books WHERE id=?";
+
+    db.query(sql, [id], function (error, result) {
+
+        if (error) {
+            res.json({
+                success: false,
+                message: "Book Delete Failed"
+            });
+        } else {
+            res.json({
+                success: true,
+                message: "Book Deleted Successfully"
+            });
+        }
+
+    });
+
+});
+
+// Server Start
 app.listen(3000, function () {
     console.log("Server running on http://localhost:3000");
 });
