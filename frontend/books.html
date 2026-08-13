@@ -12,13 +12,21 @@
 <body>
 
     <nav>
+
         <h2>📚 Library Management</h2>
 
         <div>
+
             <a href="index.html">Home</a>
+
             <a href="login.html">Logout</a>
+
         </div>
+
     </nav>
+
+
+    <!-- Available Books -->
 
     <div class="form-container">
 
@@ -27,14 +35,23 @@
         <table border="1" width="100%" cellpadding="10">
 
             <thead>
+
                 <tr>
+
                     <th>ID</th>
+
                     <th>Title</th>
+
                     <th>Author</th>
+
                     <th>Category</th>
+
                     <th>Quantity</th>
+
                     <th>Action</th>
+
                 </tr>
+
             </thead>
 
             <tbody id="bookTable">
@@ -44,6 +61,44 @@
         </table>
 
     </div>
+
+
+    <!-- My Borrowed Books -->
+
+    <div class="form-container">
+
+        <h2>📖 My Borrowed Books</h2>
+
+        <table border="1" width="100%" cellpadding="10">
+
+            <thead>
+
+                <tr>
+
+                    <th>Borrow ID</th>
+
+                    <th>Title</th>
+
+                    <th>Author</th>
+
+                    <th>Borrow Date</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="borrowedBookTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 
     <script src="js/script.js"></script>
 

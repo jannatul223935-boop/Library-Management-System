@@ -48,6 +48,8 @@ if (registerForm) {
 }
 
 
+// Login
+
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
@@ -106,6 +108,9 @@ if (loginForm) {
 
 }
 
+
+// View Books
+
 const bookTable = document.getElementById("bookTable");
 
 if (bookTable) {
@@ -116,28 +121,32 @@ if (bookTable) {
 
         .then(data => {
 
-            data.books.forEach(function(book) {
+            data.books.forEach(function (book) {
 
-              bookTable.innerHTML += `
-<tr>
-    <td>${book.id}</td>
-    <td>${book.title}</td>
-    <td>${book.author}</td>
-    <td>${book.category}</td>
-    <td>${book.quantity}</td>
-    <td>
-        <button onclick="borrowBook(${book.id})">
-            Borrow
-        </button>
-    </td>
-</tr>
-`;
+                bookTable.innerHTML += `
+                    <tr>
+                        <td>${book.id}</td>
+                        <td>${book.title}</td>
+                        <td>${book.author}</td>
+                        <td>${book.category}</td>
+                        <td>${book.quantity}</td>
+                        <td>
+                            ${
+                                book.quantity > 0
+                                ? `<button onclick="borrowBook(${book.id})">
+                                    Borrow
+                                   </button>`
+                                : "Not Available"
+                            }
+                        </td>
+                    </tr>
+                `;
 
             });
 
         })
 
-        .catch(function(error) {
+        .catch(function (error) {
 
             console.log(error);
             alert("Failed to Load Books");
@@ -145,6 +154,9 @@ if (bookTable) {
         });
 
 }
+
+
+// Borrow Book
 
 function borrowBook(bookId) {
 
@@ -178,6 +190,93 @@ function borrowBook(bookId) {
     .catch(function () {
 
         alert("Borrow Failed!");
+
+    });
+
+}
+
+
+// My Borrowed Books
+
+const borrowedBookTable = document.getElementById("borrowedBookTable");
+
+if (borrowedBookTable) {
+
+    fetch("http://localhost:3000/borrowed-books/2")
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            if (!data.success) {
+
+                alert(data.message);
+                return;
+
+            }
+
+            data.books.forEach(function (book) {
+
+                borrowedBookTable.innerHTML += `
+                    <tr>
+                        <td>${book.borrow_id}</td>
+                        <td>${book.title}</td>
+                        <td>${book.author}</td>
+                        <td>
+                            ${new Date(book.borrow_date).toLocaleDateString()}
+                        </td>
+                        <td>${book.status}</td>
+                        <td>
+                            ${
+                                book.status === "Borrowed"
+                                ? `<button onclick="returnBook(${book.borrow_id})">
+                                    Return
+                                   </button>`
+                                : "Returned"
+                            }
+                        </td>
+                    </tr>
+                `;
+
+            });
+
+        })
+
+        .catch(function (error) {
+
+            console.log(error);
+            alert("Failed to Load Borrowed Books");
+
+        });
+
+}
+
+
+// Return Book
+
+function returnBook(borrowId) {
+
+    fetch(`http://localhost:3000/return-book/${borrowId}`, {
+
+        method: "PUT"
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        alert(data.message);
+
+        if (data.success) {
+            location.reload();
+        }
+
+    })
+
+    .catch(function () {
+
+        alert("Return Failed!");
 
     });
 

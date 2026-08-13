@@ -207,6 +207,43 @@ app.post("/borrow-book", function (req, res) {
 
 });
 
+// User Borrowed Books
+app.get("/borrowed-books/:userId", function (req, res) {
+
+    const userId = req.params.userId;
+
+    const sql = `
+        SELECT 
+            br.id AS borrow_id,
+            br.book_id,
+            b.title,
+            b.author,
+            br.borrow_date,
+            br.status
+        FROM borrow_records br
+        JOIN books b ON br.book_id = b.id
+        WHERE br.user_id = ?
+        ORDER BY br.id DESC
+    `;
+
+    db.query(sql, [userId], function (error, result) {
+
+        if (error) {
+            return res.json({
+                success: false,
+                message: "Failed to Load Borrowed Books"
+            });
+        }
+
+        res.json({
+            success: true,
+            books: result
+        });
+
+    });
+
+});
+
 // Return Book
 app.put("/return-book/:id", function (req, res) {
 
