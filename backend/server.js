@@ -38,7 +38,38 @@ app.post("/register", function (req, res) {
     });
 
 });
-// Server Start
+        // User Login
+app.post("/login", function (req, res) {
+
+    const { email, password } = req.body;
+
+    const sql = "SELECT * FROM users WHERE email=? AND password=?";
+
+    db.query(sql, [email, password], function (error, result) {
+
+        if (error) {
+            res.json({
+                success: false,
+                message: "Login Failed"
+            });
+        } else if (result.length > 0) {
+            res.json({
+                success: true,
+                message: "Login Successful",
+                user: result[0]
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "Invalid Email or Password"
+            });
+        }
+
+    });
+
+});
+
+        // Server Start
 app.listen(3000, function () {
     console.log("Server running on http://localhost:3000");
 });
