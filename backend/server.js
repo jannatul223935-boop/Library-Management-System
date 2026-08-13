@@ -69,6 +69,30 @@ app.post("/login", function (req, res) {
 
 });
 
+                 // Add Book
+app.post("/add-book", function (req, res) {
+
+    const { title, author, category, quantity } = req.body;
+
+    const sql = "INSERT INTO books (title, author, category, quantity) VALUES (?, ?, ?, ?)";
+
+    db.query(sql, [title, author, category, quantity], function (error, result) {
+
+        if (error) {
+            res.json({
+                success: false,
+                message: "Book Added Failed"
+            });
+        } else {
+            res.json({
+                success: true,
+                message: "Book Added Successfully"
+            });
+        }
+
+    });
+
+});
         // Server Start
 app.listen(3000, function () {
     console.log("Server running on http://localhost:3000");
