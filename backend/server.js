@@ -206,6 +206,63 @@ app.post("/borrow-book", function (req, res) {
     });
 
 });
+
+// Return Book
+app.put("/return-book/:id", function (req, res) {
+
+    const borrowId = req.params.id;
+
+    const updateBorrow = `
+        UPDATE borrow_records
+        SET status='Returned', return_date=CURDATE()
+        WHERE id=?
+    `;
+
+    db.query(updateBorrow, [borrowId], function (error) {
+
+        if (error) {
+            return res.json({
+                success: false,
+                message: "Return Failed"
+            });
+        }
+
+        const getBook = "SELECT book_id FROM borrow_records WHERE id=?";
+
+        db.query(getBook, [borrowId], function (error, result) {
+
+            if (error || result.length === 0) {
+                return res.json({
+                    success: false,
+                    message: "Book Not Found"
+                });
+            }
+
+            const bookId = result[0].book_id;
+
+            const updateBook = "UPDATE books SET quantity = quantity + 1 WHERE id=?";
+
+            db.query(updateBook, [bookId], function (error) {
+
+                if (error) {
+                    res.json({
+                        success: false,
+                        message: "Quantity Update Failed"
+                    });
+                } else {
+                    res.json({
+                        success: true,
+                        message: "Book Returned Successfully"
+                    });
+                }
+
+            });
+
+        });
+
+    });
+
+});
 // Server Start
 app.listen(3000, function () {
     console.log("Server running on http://localhost:3000");
