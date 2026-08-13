@@ -219,6 +219,7 @@ app.get("/borrowed-books/:userId", function (req, res) {
             b.title,
             b.author,
             br.borrow_date,
+            br.return_date,
             br.status
         FROM borrow_records br
         JOIN books b ON br.book_id = b.id
