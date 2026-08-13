@@ -105,3 +105,80 @@ if (loginForm) {
     });
 
 }
+
+const bookTable = document.getElementById("bookTable");
+
+if (bookTable) {
+
+    fetch("http://localhost:3000/books")
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            data.books.forEach(function(book) {
+
+              bookTable.innerHTML += `
+<tr>
+    <td>${book.id}</td>
+    <td>${book.title}</td>
+    <td>${book.author}</td>
+    <td>${book.category}</td>
+    <td>${book.quantity}</td>
+    <td>
+        <button onclick="borrowBook(${book.id})">
+            Borrow
+        </button>
+    </td>
+</tr>
+`;
+
+            });
+
+        })
+
+        .catch(function(error) {
+
+            console.log(error);
+            alert("Failed to Load Books");
+
+        });
+
+}
+
+function borrowBook(bookId) {
+
+    fetch("http://localhost:3000/borrow-book", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            user_id: 2,
+            book_id: bookId
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        alert(data.message);
+
+        if (data.success) {
+            location.reload();
+        }
+
+    })
+
+    .catch(function () {
+
+        alert("Borrow Failed!");
+
+    });
+
+}
