@@ -116,6 +116,32 @@ app.get("/books", function (req, res) {
     });
 
 });
+
+         // Edit Book
+app.put("/edit-book/:id", function (req, res) {
+
+    const id = req.params.id;
+    const { title, author, category, quantity } = req.body;
+
+    const sql = "UPDATE books SET title=?, author=?, category=?, quantity=? WHERE id=?";
+
+    db.query(sql, [title, author, category, quantity, id], function (error, result) {
+
+        if (error) {
+            res.json({
+                success: false,
+                message: "Book Update Failed"
+            });
+        } else {
+            res.json({
+                success: true,
+                message: "Book Updated Successfully"
+            });
+        }
+
+    });
+
+});
         // Server Start
 app.listen(3000, function () {
     console.log("Server running on http://localhost:3000");
