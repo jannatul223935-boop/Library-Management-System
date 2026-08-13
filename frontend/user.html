@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>User Dashboard</title>
 
     <link rel="stylesheet" href="css/style.css">
@@ -12,13 +13,19 @@
 <body>
 
     <nav>
+
         <h2>📚 Library Management</h2>
 
         <div>
+
             <a href="index.html">Home</a>
+
             <a href="login.html">Logout</a>
+
         </div>
+
     </nav>
+
 
     <div class="hero">
 
@@ -26,23 +33,41 @@
 
         <p>Choose an option below.</p>
 
+
+        <!-- View Books -->
+
         <button onclick="window.location.href='books.html'">
+
             View Books
+
         </button>
+
 
         <br><br>
 
-        <button>
+
+        <!-- Borrow Book -->
+
+        <button onclick="window.location.href='books.html?mode=borrow'">
+
             Borrow Book
+
         </button>
+
 
         <br><br>
 
-        <button>
+
+        <!-- Return Book -->
+
+        <button onclick="window.location.href='books.html?mode=return'">
+
             Return Book
+
         </button>
 
     </div>
+
 
 </body>
 
