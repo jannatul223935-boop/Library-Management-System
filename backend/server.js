@@ -166,7 +166,46 @@ app.delete("/delete-book/:id", function (req, res) {
     });
 
 });
+          // Borrow Book
+app.post("/borrow-book", function (req, res) {
 
+    const { user_id, book_id } = req.body;
+
+    const insertQuery = `
+        INSERT INTO borrow_records (user_id, book_id, borrow_date, status)
+        VALUES (?, ?, CURDATE(), 'Borrowed')
+    `;
+
+    db.query(insertQuery, [user_id, book_id], function (error) {
+
+        if (error) {
+            return res.json({
+                success: false,
+                message: "Borrow Failed"
+            });
+        }
+
+        const updateQuery = "UPDATE books SET quantity = quantity - 1 WHERE id=? AND quantity > 0";
+
+        db.query(updateQuery, [book_id], function (error) {
+
+            if (error) {
+                res.json({
+                    success: false,
+                    message: "Quantity Update Failed"
+                });
+            } else {
+                res.json({
+                    success: true,
+                    message: "Book Borrowed Successfully"
+                });
+            }
+
+        });
+
+    });
+
+});
 // Server Start
 app.listen(3000, function () {
     console.log("Server running on http://localhost:3000");
