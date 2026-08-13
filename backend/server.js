@@ -93,6 +93,29 @@ app.post("/add-book", function (req, res) {
     });
 
 });
+
+        // View All Books
+app.get("/books", function (req, res) {
+
+    const sql = "SELECT * FROM books";
+
+    db.query(sql, function (error, result) {
+
+        if (error) {
+            res.json({
+                success: false,
+                message: "Failed to Load Books"
+            });
+        } else {
+            res.json({
+                success: true,
+                books: result
+            });
+        }
+
+    });
+
+});
         // Server Start
 app.listen(3000, function () {
     console.log("Server running on http://localhost:3000");
