@@ -224,6 +224,7 @@ if (pageMode === "return") {
                         action = `
 
                             <button
+                            class="edit-btn"
                                 onclick="editBook(${book.id})">
 
                                 Edit
@@ -232,6 +233,7 @@ if (pageMode === "return") {
 
 
                             <button
+                            class="edit-btn"
                                 onclick="deleteBook(${book.id})">
 
                                 Delete
@@ -254,6 +256,7 @@ if (pageMode === "return") {
                             action = `
 
                                 <button
+                                class="borrow-btn"
                                     onclick="borrowBook(${book.id})">
 
                                     Borrow
@@ -487,6 +490,7 @@ if (
                     action = `
 
                         <button
+                        class="return-btn"
                             onclick="returnBook(${book.borrow_id})">
 
                             Return
